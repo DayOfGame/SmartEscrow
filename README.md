@@ -1,1 +1,1 @@
-# SmartEscrow
+SmartEscrow is a TypeScript-based React project designed to streamline and secure online transactions through a robust escrow system. As the main application component, it incorporates efficient routing to various functionalities including the core Escrow services, ensuring a seamless and secure user experience. This project is an essential tool for developers looking to integrate escrow services into their applications with ease and reliability.
