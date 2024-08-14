@@ -11,34 +11,57 @@ const EscrowManager: React.FC = () => {
   const [escrows, setEscrows] = useState<Escrow[]>([]);
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/escrows`)
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
       .then(setEscrows)
-      .catch(console.error);
+      .catch(error => {
+        console.error("There was a problem with your fetch operation:", error);
+        setErrorMessage("Failed to load existing escrows. Please try again later.");
+      });
   }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    // Basic validation
+    if (!title || amount <= 0) {
+      setErrorMessage('Please make sure all fields are correctly filled out.');
+      return;
+    }
+
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/escrows`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, amount })
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to create new escrow');
+      }
+
       const newEscrow = await response.json();
       setEscrows(current => [...current, newEscrow]);
-      setTitle('');
-      setAmount(0);
+      setTitle(''); // Reset the title
+      setAmount(0); // Reset the amount
+      setErrorMessage(''); // Clear any existing errors
     } catch (error) {
-      console.error("Failed to create escrow", error);
+      console.error("Failed to create escrow:", error);
+      setErrorMessage("Failed to create escrow. Please try again.");
     }
   };
 
   return (
     <div>
       <h2>Create Escrow</h2>
+      {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="title">Title: </label>
