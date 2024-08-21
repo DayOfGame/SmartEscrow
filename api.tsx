@@ -1,45 +1,41 @@
-import axios from 'axios';
-import { AxiosResponse } from 'axios';
+class Cache<T> {
+  private store: Map<string, T> = new Map();
 
-type Escrow = {
-  id: string;
-  amount: number;
-  sender: string;
-  receiver: string;
-  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
+  get(key: string): T | undefined {
+    return this.store.get(key);
+  }
+
+  set(key: string, value: T): void {
+    this.store.set(key, JSON.stringify(value));
+  }
+
+  has(key: string): boolean {
+    return this.store.has(key);
+  }
+
+  clear(): void {
+    this.store.clear();
+  }
 }
 
-const API_URL = process.env.API_URL;
-const API_KEY = process.env.API_KEY;
+const responseCache = new Cache<AxiosResponse<any>>();
 
-const apiClient = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Authorization': `Bearer ${API_KEY}`,
-    'Content-Type': 'application/json'
-  }
-});
+import axios, { AxiosResponse } from 'axios';
 
 export const listEscrows = async (): Promise<AxiosResponse<Escrow[]>> => {
-  return apiClient.get('/escrows');
+  const cacheKey = '/escrows';
+  
+  if (responseCache.has(cacheKey)) {
+    return Promise.resolve(responseCache.get(cacheKey) as AxiosResponse<Escrow[]>);
+  }
+
+  const response = await apiClient.get('/escrows');
+  responseCache.set(cacheKey, response);
+  return response;
 }
 
 export const createEscrow = async (escrowData: Omit<Escrow, 'id' | 'status'>): Promise<AxiosResponse<Escrow>> => {
-  return apiClient.post('/escrows', escrowData);
-}
-
-export const updateEscrow = async (id: string, escrowData: Partial<Escrow>): Promise<AxiosResponse<Escrow>> => {
-  return apiClient.patch(`/escrows/${id}`, escrowData);
-}
-
-export const deleteEscrow = async (id: string): Promise<AxiosResponse<void>> => {
-  return apiClient.delete(`/escrows/${id}`);
-}
-
-export const completeEscrow = async (id: string): Promise<AxiosResponse<Escrow>> => {
-  return updateEscrow(id, { status: 'COMPLETED' });
-}
-
-export const cancelEscrow = async (id: string): Promise<AxiosResponse<Escrow>> => {
-  return updateEscrow(id, { status: 'CANCELLED' });
+  const response = await apiClient.post('/escrows', escrowData);
+  responseCache.clear();
+  return response;
 }
