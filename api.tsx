@@ -1,41 +1,41 @@
-class Cache<T> {
-  private store: Map<string, T> = new Map();
-
-  get(key: string): T | undefined {
-    return this.store.get(key);
-  }
-
-  set(key: string, value: T): void {
-    this.store.set(key, JSON.stringify(value));
-  }
-
-  has(key: string): boolean {
-    return this.store.has(key);
-  }
-
-  clear(): void {
-    this.store.clear();
-  }
-}
-
-const responseCache = new Cache<AxiosResponse<any>>();
-
 import axios, { AxiosResponse } from 'axios';
 
-export const listEscrows = async (): Promise<AxiosResponse<Escrow[]>> => {
-  const cacheKey = '/escrows';
-  
-  if (responseCache.has(cacheKey)) {
-    return Promise.resolve(responseCache.get(cacheKey) as AxiosResponse<Escrow[]>);
+class ResponseCache<T> {
+  private cacheStore: Map<string, T> = new Map();
+
+  getCachedResponse(key: string): T | undefined {
+    return this.cacheStore.get(key);
   }
 
-  const response = await apiClient.get('/escrows');
-  responseCache.set(cacheKey, response);
-  return response;
+  setCachedResponse(key: string, value: T): void {
+    this.cacheStore.set(key, JSON.stringify(value));
+  }
+
+  isResponseCached(key: string): boolean {
+    return this.cacheStore.has(key);
+  }
+
+  clearCache(): void {
+    this.cacheStore.clear();
+  }
 }
 
-export const createEscrow = async (escrowData: Omit<Escrow, 'id' | 'status'>): Promise<AxiosResponse<Escrow>> => {
-  const response = await apiClient.post('/escrows', escrowData);
-  responseCache.clear();
-  return response;
+const escrowResponseCache = new ResponseCache<AxiosResponse<any>>();
+
+export const fetchAllEscrows = async (): Promise<AxiosResponse<Escrow[]>> => {
+  const escrowsCacheKey = '/escrows';
+  
+  if (escrowResponseCache.isResponseCached(escrowsCacheKey)) {
+    return Promise.resolve(escrowResponseCache.getCachedResponse(escrowsCacheKey) as AxiosResponse<Escrow[]>);
+  }
+
+  const escrowsResponse = await apiClient.get('/escrows');
+  escrowResponseCache.setCachedResponse(escrowsCacheKey, escrowsResponse);
+  return escrowsResponse;
+}
+
+export const createNewEscrow = async (escrowData: Omit<Escrow, 'id' | 'status'>): Promise<AxiosResponse<Escrow>> => {
+  const newEscrowResponse = await apiClient.post('/escrows', escrowData);
+  escrowResponseCache.clearCache();
+  return newEscrowResponse;
 }
