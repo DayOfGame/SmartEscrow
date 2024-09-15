@@ -1,45 +1,46 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-interface IUser {
+interface IUserCredentials {
   id: string;
   username: string;
-  encryptedPassword: string;
+  hashedPassword: string;
 }
 
-const registeredUsers: IUser[] = [];
+const registeredUsers: IUserCredentials[] = [];
 
-const encryptPassword = async (password: string): Promise<string> => {
-  return await bcrypt.hash(password, 10);
+const hashPassword = async (plainPassword: string): Promise<string> => {
+  return await bcrypt.hash(plainPassword, 10);
 };
 
-export const registerUser = async (username: string, password: string): Promise<IUser> => {
-  const hashedPassword = await encryptPassword(password);
-  const newUser: IUser = {
+export const registerNewUser = async (username: string, plainPassword: string): Promise<IUserCredentials> => {
+  const hashedPassword = await hashPassword(plainPassword);
+  const newUser: IUserCredentials = {
     id: Date.now().toString(),
     username,
-    encryptedPassword: hashedPassword,
+    hashedPassword,
   };
   registeredUsers.push(newUser);
   return newUser;
 };
 
-export const loginUser = async (username: string, password: string): Promise<string> => {
-  const user = registeredUsers.find(user => user.username === username);
+export const authenticateUserAndGetToken = async (username: string, plainPassword: string): Promise<string> => {
+  const user = registeredUsers.find(userRecord => userRecord.username === username);
   if (!user) {
     throw new Error('User not found');
   }
-  const isPasswordValid = await bcrypt.compare(password, user.encryptedPassword);
-  if (!isPasswordValid) {
+  const isPasswordMatch = await bcrypt.compare(plainPassword, user.hashedPassword);
+  if (!isPasswordMatch) {
     throw new Error('Invalid password');
   }
   const authToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
   return authToken;
 };
 
-export const validateToken = (token: string): jwt.JwtPayload | string => {
+export const decodeAndValidateToken = (token: string): jwt.JwtPayload | string => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET || '');
   } catch (error) {
@@ -47,9 +48,9 @@ export const validateToken = (token: string): jwt.JwtPayload | string => {
   }
 };
 
-export const userIsAuthenticated = (token: string): boolean => {
+export const isUserAuthenticated = (token: string): boolean => {
   try {
-    const decodedToken = validateToken(token);
+    const decodedToken = decodeAndValidateToken(token);
     return !!decodedToken;
   } catch (error) {
     return false;
