@@ -1,0 +1,86 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.header, .footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.escrow-form {
+    background-color: #f2f2f2;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.escrow-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.escrow-form input[type="text"],
+.escrow-form input[type="number"],
+.escrow-form input[type="email"],
+.escrow-form select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 20px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.escrow-form button {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.escrow-form button:hover {
+    background-color: #45a049;
+}
+
+.escrow-list {
+    margin-top: 20px;
+}
+
+.escrow-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.escrow-list table, .escrow-list th, .escrow-list td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.escrow-list th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.escrow-list tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.escrow-list tr:hover {
+    background-color: #ddd;
+}
