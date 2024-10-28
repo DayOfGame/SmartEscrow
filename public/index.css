@@ -2,31 +2,35 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
 }
 
 .container {
     width: 90%;
     margin: auto;
     overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .header, .footer {
     background-color: #333;
     color: #fff;
     text-align: center;
-    padding: 10px 0;
+    padding: 20px 0;
 }
 
 .escrow-form {
-    background-color: #f2f2f2;
+    background-color: #fdfdfd;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .escrow-form label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .escrow-form input[type="text"],
@@ -34,23 +38,33 @@ body, html {
 .escrow-form input[type="email"],
 .escrow-form select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin: 5px 0 20px 0;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    transition: border 0.3s ease-in-out;
+}
+
+.escrow-form input[type="text"]:focus,
+.escrow-form input[type="number"]:focus,
+.escrow-form input[type="email"]:focus,
+.escrow-form select:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 8px rgba(76,175,80,0.5);
 }
 
 .escrow-form button {
     width: 100%;
     background-color: #4CAF50;
     color: white;
-    padding: 14px 20px;
+    padding: 16px 20px;
     margin: 8px 0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.25s ease-in-out;
 }
 
 .escrow-form button:hover {
@@ -59,6 +73,7 @@ body, html {
 
 .escrow-list {
     margin-top: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .escrow-list table {
@@ -69,7 +84,7 @@ body, html {
 .escrow-list table, .escrow-list th, .escrow-list td {
     border: 1px solid #ddd;
     text-align: left;
-    padding: 8px;
+    padding: 10px;
 }
 
 .escrow-list th {
@@ -78,9 +93,10 @@ body, html {
 }
 
 .escrow-list tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f8f9fa;
 }
 
 .escrow-list tr:hover {
     background-color: #ddd;
+    cursor: pointer;
 }
